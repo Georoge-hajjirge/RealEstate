@@ -28,7 +28,7 @@ export const updateUserProfile = async (req: RequestWithUser, res: Response): Pr
         const updates = req.body;
         console.log('req.file',req.file)
         if (req.file) {
-            updates.profilePicture = req.file.path;
+            updates.profilePictures = req.file.path;
         }
         const updatedUser = await UserModel.findOneAndUpdate(
             { _id: new ObjectId(userId) },
