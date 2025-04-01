@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { failResponse, successResponse } from "../utils/response";
 import { Messages } from "../utils/constants";
 import { StatusCode } from "../utils/statusCode";
-import FavoriteModel from "../schema/favoriteSchema";
+import UserModel from "../schema/userSchema";
 
 
 const addToFavorites=async(req:Request,res:Response):Promise<void>=>{
@@ -13,12 +13,18 @@ const addToFavorites=async(req:Request,res:Response):Promise<void>=>{
         return;
     }
     try{
-        const newFavorite= new FavoriteModel({
-            user_id,
-            property_id
-        });
-        const favorite=await newFavorite.save();
-        successResponse(res,favorite,Messages.Favorite_Adding,StatusCode.Created);
+        const user =await UserModel.findById(user_id);
+        if(!user){
+            failResponse(res,Messages.User_Not_Found,StatusCode.Not_Found);
+            return;
+        }
+        if(user.favoriteProducts.includes(property_id)){
+            failResponse(res,Messages.Favorite_Already_Added,StatusCode.Bad_Request);
+            return
+        }
+        user.favoriteProducts.push(property_id);
+        await user.save();
+        successResponse(res, user.favoriteProducts,Messages.Favorite_Adding,StatusCode.Created);
     }
     catch(error){
         console.error(error);
@@ -31,8 +37,12 @@ const addToFavorites=async(req:Request,res:Response):Promise<void>=>{
 const getFavoritesByUser=async(req:Request,res:Response):Promise<void>=>{
     const {user_id}=req.params;
     try{
-        const favorites= await FavoriteModel.find({user_id}).populate('property_id');
-        successResponse(res,favorites,Messages.Favorite_Fetching_Success,StatusCode.OK);
+        const user= await UserModel.findById(user_id).populate('favoriteProducts');
+        if(!user){
+            failResponse(res,Messages.User_Not_Found,StatusCode.Not_Found);
+            return;
+        }
+        successResponse(res, user.favoriteProducts,Messages.Favorite_Fetching_Success,StatusCode.OK);
     }
     catch(error){
         console.error(error);
@@ -50,14 +60,19 @@ const removeFromFavorites=async(req:Request,res:Response):Promise<void>=>{
     }
 
     try{
-        const removedFavorite=await FavoriteModel.findOneAndDelete ({user_id: user_id, 
-            property_id: property_id });
-        if(removedFavorite){
-            successResponse(res,removedFavorite,Messages.Favorite_Removing_Success,StatusCode.OK)
+        const user = await UserModel.findById(user_id);
+        if (!user) {
+            failResponse(res, Messages.User_Not_Found, StatusCode.Not_Found);
+            return;
         }
-        else{
-            failResponse(res,Messages.Favorite_Not_Found,StatusCode.Not_Found)
+        const index = user.favoriteProducts.indexOf(property_id);
+        if (index === -1) {
+            failResponse(res, Messages.Favorite_Not_Found, StatusCode.Not_Found);
+            return;
         }
+        user.favoriteProducts.splice(index, 1);
+        await user.save();
+        successResponse(res, user.favoriteProducts,Messages.Favorite_Removing_Success,StatusCode.OK)
     }
     catch(error){
         console.error(error);

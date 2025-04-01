@@ -8,7 +8,10 @@ export interface RegistrationFormData{
     phoneNumber:number;
     image:FileList
 }
-
+interface ProfilePicture{
+  url:string;
+  alternateName:string;
+}
 export interface LoginFormData{
     email:string;
     password:string;
@@ -32,6 +35,7 @@ export interface ProfileFormData{
 
 interface ProfileResponse {
     data: {
+      profilePictures:ProfilePicture;
       _id: string;
       firstName: string;
       lastName: string;
@@ -39,7 +43,12 @@ interface ProfileResponse {
       phoneNumber?: string;
       role?: string;
       profilePicture?: string;
+      favoriteProducts: string[];
     };
     message: string;
     status: string;
   }
+  export interface ProfilePictureUploadProps {
+    imagePreview: string | null;
+  }
+  

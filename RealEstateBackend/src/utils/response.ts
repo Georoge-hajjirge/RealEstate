@@ -1,5 +1,5 @@
-import { Response } from "express";
-import { Messages } from "./constants";
+import { Request, Response, NextFunction, RequestHandler } from 'express';import { Messages } from "./constants";
+
 export const successResponse=(res:Response,data:any,message:string,statusCode=200)=>{
     return res.status(statusCode).json({
         status:Messages.Success,
@@ -22,3 +22,9 @@ export const errorResponse=(res:Response,message:string,statusCode = 500,error=n
         error
     })
 }
+export const asyncHandler = <T = void>(
+  fn: RequestHandler
+) => (req: Request, res: Response, next: NextFunction) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+  

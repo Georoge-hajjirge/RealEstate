@@ -1,23 +1,29 @@
-export interface Image {
-  file: File;
-  altText: string; 
-}
 
 export interface PropertyFormData {
   title: string;
   description: string;
   property_type: string;
   price: number;
-  address: string;
-  city: string;
-  state: string;
-  zip_code: string;
+  address: { 
+    street: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+  };
   bedrooms: number;
   bathrooms: number;
-  features: string;
+  features: string[];
   status: string;
-  images: any; 
+  images: { file: File; altText: string }[];
+  isActive: boolean;
+  location: {
+    longitude: number;
+    latitude: number;
+    locationUrl: string;
+  };
 }
+
 
 export interface PropertyResponse {
   _id: string;
@@ -25,13 +31,16 @@ export interface PropertyResponse {
   description: string;
   property_type: string;
   price: number;
-  address: string;
-  city: string;
-  state: string;
-  zip_code: string;
+  address: { 
+    street: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+  };
   bedrooms: number;
   bathrooms: number;
-  features: string;
+  features: string[];
   status: string;
   images: {
     url: string;
@@ -41,7 +50,5 @@ export interface PropertyResponse {
   isFavorite: boolean;
 }
 
-export interface Favorite{
-  property_id: string;
-  user_id: string,
-}
+
+

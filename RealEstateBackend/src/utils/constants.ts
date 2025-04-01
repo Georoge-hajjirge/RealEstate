@@ -10,6 +10,7 @@ export const Messages = {
     User_Deleted: "User Deleted successfully!",
     User_Created: "User Created successfully!",
     User_Not_Available: "User Not Available",
+    User_Not_Found:'User not found',
     Unauthorized_User: "Unauthorized",
     Duplicate_Email: "Duplicate Email",
     UserAuthenticated: "User Authenticated successfully!",
@@ -36,6 +37,8 @@ export const Messages = {
     Invalid_Images_Format:'invalid image',
     Favorite_Removing_Success:'Favorite removed successfully',
     Favorite_Not_Found:'Favorite not found',
-    Favorite_Removing_Failure:'Removing favorite failed'
+    Favorite_Removing_Failure:'Removing favorite failed',
+    Favorite_Already_Added:'Already added in favorite',
+    Invalid_Bucket_Name:'Invalid bucket name',
 
 }

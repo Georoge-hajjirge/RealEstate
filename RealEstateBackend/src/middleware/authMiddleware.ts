@@ -4,6 +4,7 @@ import { RequestWithUser,  } from "../interfaces/userInterface";
 import { failResponse } from "../utils/response";
 import { Messages } from "../utils/constants";
 import { StatusCode } from "../utils/statusCode";
+import { JwtPayload } from "../interfaces/express";
 
 const authenticate=async (req:RequestWithUser,res:Response,next:NextFunction):Promise<any>=>{
     const token=req.header('Authorization')?.replace('Bearer','').trim();
@@ -12,7 +13,8 @@ const authenticate=async (req:RequestWithUser,res:Response,next:NextFunction):Pr
         return;
     }
     try{
-       await jwt.verify(token,process.env.JWT_SECRET as string) ;
+        const decoded =  await jwt.verify(token,process.env.JWT_SECRET as string) as JwtPayload;
+       req.userId = decoded.userId;
         next();
     }
     catch(error){

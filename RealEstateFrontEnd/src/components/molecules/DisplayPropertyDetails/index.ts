@@ -1,0 +1,1 @@
+export { default as DisplayPropertyDetails } from './DisplayPropertyDetails';

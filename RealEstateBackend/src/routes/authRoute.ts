@@ -8,13 +8,13 @@ import { addToFavorites, getFavoritesByUser, removeFromFavorites } from '../cont
 
 const router = express.Router();
 
-router.post('/register', upload.single('profilePicture'), registerUser);
+router.post('/register', upload.single('profilePictures'), registerUser);
 router.post('/login', loginUser);
 
 router.get('/profile/:id', authenticate,getUserProfile);
-router.put('/profile/:id', upload.single('profilePicture'),authenticate, updateUserProfile);
+router.put('/profile/:id', upload.single('profilePictures'),authenticate, updateUserProfile);
 
-router.post('/property',authenticate,upload.array('images') ,createProperty);
+router.post('/property',authenticate,upload.array("propertyPictures") ,createProperty);
 router.get('/properties',getAllProperties);
 
 

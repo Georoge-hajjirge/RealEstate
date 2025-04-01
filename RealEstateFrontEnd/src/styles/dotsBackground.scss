@@ -1,0 +1,22 @@
+.tips-text {
+  position: relative;
+  background-color: black;
+  color: white;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(circle, rgba(80, 80, 255, 0.9) 6%, transparent 6%) 0px 0px / 20px 20px,
+      radial-gradient(circle, rgba(80, 80, 255, 0.9) 6%, transparent 6%) 12px 12px / 20px 20px;
+    opacity: 0.8; 
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  &:hover::before {
+    opacity: 1; 
+  }
+}

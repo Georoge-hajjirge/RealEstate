@@ -9,7 +9,7 @@ export const postRequest=<T>(endpoint:string,data:any):Promise<T>=>{
         throw error;
     })
 }
-export const postFormDataRequest = <T>(endpoint: string, data: FormData): Promise<T> => {
+export const postFormDataRequest = async <T>(endpoint: string, data: FormData): Promise<T> => {
 
   return api
     .post(endpoint, data,{

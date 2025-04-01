@@ -5,13 +5,15 @@ import { failResponse, successResponse } from "../utils/response";
 import { Messages } from "../utils/constants";
 import { StatusCode } from "../utils/statusCode";
 import bcrypt from 'bcryptjs';
+import { Status } from "../schema/interface";
+import { imagekit } from "../config/ImgageKit";
 
 const registerUser = async (req: Request, res: Response): Promise<any> => {
     const { firstName, lastName, email, password, confirmPassword, role, phoneNumber} = req.body;
 
 
-      const profilePicture = req.file;
-    if (!firstName || !lastName || !email || !password || !confirmPassword || !role || !phoneNumber || !profilePicture) {
+      const profilePictures = req.file;
+    if (!firstName || !lastName || !email || !password || !confirmPassword || !role || !phoneNumber || !profilePictures) {
         failResponse(res, Messages.Missing_Fields_Required, StatusCode.Bad_Request)
         return;
     }
@@ -24,8 +26,26 @@ const registerUser = async (req: Request, res: Response): Promise<any> => {
 
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
-        const profilePicPath = `/uploads/${profilePicture.filename}`; 
-        const newUser = { firstName, lastName, email, passwordHash,role,phoneNumber,profilePicture:profilePicPath };
+        const uploadResponse=await imagekit.upload({
+            file:profilePictures.buffer,
+            fileName:profilePictures?.originalname,
+            folder:'/profile_pictures/'
+        })
+        // const profilePicPath = `/uploads/${profilePicture.filename}`; 
+        const newUser = { firstName, lastName, email, passwordHash,role,phoneNumber,
+            profilePictures:{
+                url:uploadResponse.url,
+                fileId:uploadResponse.fileId,
+                alternateName:profilePictures.originalname
+            }
+            ,
+            status: Status.Active, 
+            isActive: true, 
+            version: 1,
+            createdBy: req.userId, 
+            createdAt: new Date(),
+            updatedAt: new Date(),
+         };
         
             const result = await createUser(newUser);
             const userId = result._id;
@@ -41,6 +61,7 @@ const registerUser = async (req: Request, res: Response): Promise<any> => {
 }
 
 const loginUser = async (req: Request, res: Response): Promise<any> => {
+    console.log('response',req.body)
     const { email, password } = req.body;
     const user = await getUserByEmail(email);
     if (!user ) {

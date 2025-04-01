@@ -1,0 +1,1 @@
+export { default as DisplayImage } from "./DisplayImage";

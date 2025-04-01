@@ -1,0 +1,16 @@
+.house-shape {
+  width: 200px;
+  height: 200px;
+  clip-path: polygon(
+    50% 5%,   
+    100% 40%, 
+    100% 100%, 
+    0% 100%, 
+    0% 40%    
+  );
+  transition: outline 0.3s ease-in-out;
+}
+
+.house-shape:hover {
+  outline: 8px solid #2563eb; 
+}
