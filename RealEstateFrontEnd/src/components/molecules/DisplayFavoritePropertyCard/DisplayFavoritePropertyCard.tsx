@@ -11,8 +11,11 @@ interface DisplayFavoritePropertyCardProps {
 const DisplayFavoritePropertyCard: React.FC<DisplayFavoritePropertyCardProps> = ({ property }) => {
   return (
     <div className="w-2/3 border border-gray-300 rounded-lg shadow-lg overflow-hidden">
-      <PropertyImage imageUrl={property.images?.[0]?.url || ""} title={property.title} />
-      <DisplayPropertyDetails property={property} />
+ <PropertyImage
+  imageUrl={property.propertyPictures?.[0]?.url || property.title}
+  title={property.title}
+  
+/>      <DisplayPropertyDetails property={property} />
     </div>
   );
 };

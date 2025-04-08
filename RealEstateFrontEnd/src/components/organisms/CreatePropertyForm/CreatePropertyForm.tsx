@@ -1,13 +1,29 @@
 import { useState } from "react";
-import { PropertyFormData } from "../../../types/propertyInterface";
+import {
+  createPropertyStart,
+  createPropertySuccess,
+  createPropertyFailure,
+} from "../../../features/createproperty/createPropertySlice";
+import {
+  selectCreatePropertySubmitting,
+} from "../../../features/createproperty";
+import { PropertyFormData, PropertyPictures } from "../../../types/propertyInterface";
 import InputField from "../../atoms/InputField";
 import Button from "../../atoms/Button";
 import PropertyDetailsForm from "../../molecules/PropertyDetailsForm";
 import PropertyAddressForm from "../../molecules/PropertyAddressForm";
 import { getRequest, postFormDataRequest } from "../../../services/endpoints";
 import { ApiResponse } from "../../../types/interfaces";
+import { useLoader } from "../../../util/LoaderContext";
+
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 
 const CreatePropertyForm = () => {
+  const { showLoader, hideLoader } = useLoader();
+  const dispatch = useAppDispatch();
+  const isSubmitting = useAppSelector(selectCreatePropertySubmitting);
+  const [imageFile, setImageFile] = useState<File[]>([]);
+
   const [property, setProperty] = useState<PropertyFormData>({
     title: "",
     description: "",
@@ -18,7 +34,7 @@ const CreatePropertyForm = () => {
     bathrooms: 0,
     features: [],
     status: "active",
-    images: [],
+    propertyPictures: [],
     isActive: true,
     location: { longitude: 0, latitude: 0, locationUrl: "" },
   });
@@ -26,18 +42,18 @@ const CreatePropertyForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (["street", "city", "state", "zipcode", "country"].includes(name)) {
-        setProperty((prev) => ({
-          ...prev,
-          address: {
-            ...prev.address,
-            [name]: value,
-          },
-        }));
-      } else {
-        setProperty((prev) => ({ ...prev, [name]: value }));
-      }
-    };
-  
+      setProperty((prev) => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          [name]: value,
+        },
+      }));
+    } else {
+      setProperty((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
   const handleLocationChange = (
     field: keyof PropertyFormData["location"],
     value: string | number
@@ -48,63 +64,57 @@ const CreatePropertyForm = () => {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files).map((file) => ({
-        file,
-        altText: "",
-      }));
-      setProperty((prev) => ({ ...prev, images: filesArray }));
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      setImageFile(Array.from(files));
     }
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    showLoader();
     try {
       const formData = new FormData();
-      
-      formData.append('title', property.title);
-      formData.append('description', property.description);
-      formData.append('property_type', property.property_type);
-      formData.append('price', property.price.toString());
-      formData.append('bedrooms', property.bedrooms.toString());
-      formData.append('bathrooms', property.bathrooms.toString());
-      formData.append('status', property.status);
-      formData.append('isActive', JSON.stringify(property.isActive));
-  
-      formData.append('address', JSON.stringify(property.address));
-    formData.append('location', JSON.stringify(property.location));
-    formData.append('features', JSON.stringify(property.features));
-
-  
-      if (property.images.length > 0) {
-        property.images.forEach((imageData, index) => {
-          formData.append('images', imageData.file);
-          console.log("imageData.file) : ",imageData.file);
-          if (imageData.altText) {
-            formData.append(`imagesAltText[${index}]`, imageData.altText);
-          }
+      formData.append("title", property.title);
+      formData.append("description", property.description);
+      formData.append("property_type", property.property_type);
+      formData.append("price", property.price.toString());
+      formData.append("bedrooms", property.bedrooms.toString());
+      formData.append("bathrooms", property.bathrooms.toString());
+      formData.append("status", property.status);
+      formData.append("isActive", JSON.stringify(property.isActive));
+      formData.append("address", JSON.stringify(property.address));
+      formData.append("location", JSON.stringify(property.location));
+      formData.append("features", JSON.stringify(property.features));
+      if (imageFile) {
+        Array.from(imageFile).forEach(file => {
+          formData.append('propertyPictures', file);
         });
       }
-  
-      const response = await postFormDataRequest<ApiResponse>('/property', formData);
-      
+
+      const response = await postFormDataRequest<ApiResponse>("/property", formData);
+
       if (response.data) {
-        alert('Property created successfully!');
-        const propertiesResponse = await getRequest<ApiResponse>('/properties', {});
-        console.log('Properties fetched:', propertiesResponse);
+        dispatch(createPropertySuccess(property));
+        alert("Property created successfully!");
+        const propertiesResponse = await getRequest<ApiResponse>("/properties", {});
+        console.log("Properties fetched:", propertiesResponse);
       } else {
-        alert('Failed to create property.');
-        console.error('API response error:', response);
+        dispatch(createPropertyFailure("Failed to create property."));
+        alert("Failed to create property.");
+        console.error("API response error:", response);
       }
     } catch (error) {
-      console.error('Error creating property:', error);
-      alert('Error creating property');
+      console.error("Error creating property:", error);
+      alert("Error creating property");
+    } finally {
+      hideLoader();
     }
   };
-  
+
   return (
     <form onSubmit={handleSubmit} className="p-6 bg-white shadow-md rounded-lg space-y-4">
-      
+
       <PropertyDetailsForm property={property} onChange={handleInputChange} setProperty={setProperty} />
 
       <legend className="font-semibold">Address</legend>

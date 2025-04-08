@@ -5,12 +5,13 @@ import { RegistrationFormData } from "../../../types/interfaces";
 import Button from "../../atoms/Button";
 import { RegisterFormFields } from "../../molecules/RegisterFormFields";
 import { postFormDataRequest } from "../../../services/endpoints"; 
+import { useLoader } from "../../../util/LoaderContext";
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<RegistrationFormData>();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null); 
-  const [isLoading, setIsLoading] = useState(false);
+  const { showLoader, hideLoader } = useLoader();
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files ?? new DataTransfer().files; 
@@ -24,7 +25,7 @@ const RegisterForm: React.FC = () => {
   };
 
   const submitHandler = async (data: RegistrationFormData) => {
-    setIsLoading(true);
+    showLoader();
     try {
       const formData = new FormData();
       formData.append("firstName", data.firstName);
@@ -53,7 +54,7 @@ const RegisterForm: React.FC = () => {
       }
       console.error(error);
     } finally {
-      setIsLoading(false);
+      hideLoader();
     }
   };
 
@@ -67,7 +68,7 @@ const RegisterForm: React.FC = () => {
         handleImageChange={handleImageChange} 
       />
       {imagePreview && <img src={imagePreview} alt="Preview" className="w-full h-auto object-cover mb-4" />}
-      <Button text={isLoading ? "Registering..." : "Register"} type="submit" disabled={isLoading} />
+      <Button text={ "Register"} type="submit" />
     </form>
   );
 };

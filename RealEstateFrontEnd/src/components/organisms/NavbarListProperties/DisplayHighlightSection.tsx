@@ -5,14 +5,23 @@ import DisplayFeatureList from "../../molecules/NavBarListProperties/DisplayFeat
 import { DisplayImage } from "../../atoms/DisplayImage";
 import DisplayStoreButtons from "../../atoms/DisplayStoreButtons";
 import phoneImage from "../../ui/assets/images/phone.webp";
-
+import RentImage from '../../ui/assets/images/rent.webp'
+import RedfinImage from '../../ui/assets/images/redfin.webp'
 const DisplayHighlightSection: React.FC = () => {
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center mx-auto px-6 py-6 gap-12 max-w-6xl">
+    <div className="flex flex-col lg:flex-row items-center justify-center mx-auto px-3 py-3 gap-12 max-w-6xl">
       <div className="lg:w-1/2 text-left mt-6 py-6 px-6">
-        <div className="flex items-center gap-2">
-          <span className="text-gray-900 text-3xl font-semibold">Rent.</span>
-          <span className="text-red-700 text-2xl font-bold mt-1">REDFIN</span>
+        <div className="flex items-center gap-6">
+        <DisplayImage
+        src={RentImage}
+        alt="Rent Logo"
+        className="w-14 "
+      />
+          <DisplayImage
+        src={RedfinImage}
+        alt="Rent Logo"
+        className="w-16 "
+      />
         </div>
 
         <DisplayHeading

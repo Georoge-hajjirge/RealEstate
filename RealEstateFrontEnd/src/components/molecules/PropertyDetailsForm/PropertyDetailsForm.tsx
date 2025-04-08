@@ -3,7 +3,7 @@ import InputField from "../../atoms/InputField";
 import TextareaField from "../../atoms/TextareaField";
 
 interface PropertyDetailsFormProps {
-  property: { title: string; description: string; property_type: string; price: number; features: string[] };
+  property: { title: string; description: string; property_type: string; price: number;bedrooms:number,bathrooms:number, features: string[] };
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   setProperty: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -15,7 +15,21 @@ const PropertyDetailsForm: React.FC<PropertyDetailsFormProps> = ({ property, onC
       <TextareaField label="Description" name="description" value={property.description} onChange={onChange} />
       <InputField label="Property Type" type="text" name="property_type" value={property.property_type} onChange={onChange} />
       <InputField label="Price" type="number" name="price" value={property.price.toString()} onChange={onChange} />
-      
+      <InputField
+        label="Bedrooms"
+        name="bedrooms"
+        type="number"
+        value={property.bedrooms.toString()}
+        onChange={onChange}
+      />
+
+      <InputField
+        label="Bathrooms"
+        name="bathrooms"
+        type="number"
+        value={property.bathrooms.toString()}
+        onChange={onChange}
+      />
       <InputField
         label="Features"
         type="text"

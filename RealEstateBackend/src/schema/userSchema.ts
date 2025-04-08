@@ -8,7 +8,6 @@ export enum UserRole {
 }
 
 interface ProfilePicture {
-  map(arg0: (pic: { url: any; alternateName: any; }) => { url: any; alternateName: any }): unknown;
   url: string;
   alternateName?: string;
 }
@@ -46,7 +45,7 @@ const userSchema: Schema = new Schema(
       },
     ],
     profilePictures: {
-      url: { type: String, required: true },
+      url: { type: String },
       alternateName: { type: String, default: null }
     },
     favoriteProducts: [

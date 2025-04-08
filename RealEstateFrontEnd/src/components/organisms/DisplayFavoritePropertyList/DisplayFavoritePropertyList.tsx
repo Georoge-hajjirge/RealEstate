@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { PropertyResponse } from "../../../types/propertyInterface";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 import { getRequest } from "../../../services/endpoints";
+import { PropertyResponse } from "../../../types/propertyInterface";
+import { setFavorites } from "../../../features/favorites/favoritesSlice";
 import DisplayFavoritePropertyCard from "../../molecules/DisplayFavoritePropertyCard/DisplayFavoritePropertyCard";
+import { useLoader } from "../../../util/LoaderContext";
 
 const DisplayFavoritePropertyList: React.FC = () => {
-  const [favoriteProperties, setFavoriteProperties] = useState<PropertyResponse[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
+  const { showLoader, hideLoader } = useLoader();
+  const favoriteProperties = useSelector((state: RootState) => state.favorites.favorites);
   const [error, setError] = useState<string | null>(null);
   const user_id = localStorage.getItem("userId");
 
@@ -13,10 +18,10 @@ const DisplayFavoritePropertyList: React.FC = () => {
     const fetchFavorites = async () => {
       if (!user_id) {
         setError("User not found");
-        setLoading(false);
         return;
       }
 
+      showLoader();
       try {
         const response = await getRequest<{ status: string; message: string; data: PropertyResponse[] }>(
           `/favorites/${user_id}`,
@@ -24,22 +29,21 @@ const DisplayFavoritePropertyList: React.FC = () => {
         );
 
         if (response?.data && Array.isArray(response.data)) {
-          setFavoriteProperties(response.data);
+          dispatch(setFavorites(response.data));
         } else {
           setError("No favorite properties found.");
         }
       } catch (error) {
-        setError("Error fetching favorite properties.");
         console.error(error);
+        setError("Error fetching favorite properties.");
       } finally {
-        setLoading(false);
+        hideLoader();
       }
     };
 
     fetchFavorites();
-  }, [user_id]);
+  }, [user_id, dispatch]);
 
-  if (loading) return <div className="text-center">Loading favorite properties...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (

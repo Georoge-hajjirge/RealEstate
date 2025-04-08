@@ -1,4 +1,7 @@
-
+interface PropertyPictures{
+  url:string;
+  alternateName:string;
+}
 export interface PropertyFormData {
   title: string;
   description: string;
@@ -15,7 +18,7 @@ export interface PropertyFormData {
   bathrooms: number;
   features: string[];
   status: string;
-  images: { file: File; altText: string }[];
+  propertyPictures: PropertyPictures[];
   isActive: boolean;
   location: {
     longitude: number;
@@ -42,11 +45,7 @@ export interface PropertyResponse {
   bathrooms: number;
   features: string[];
   status: string;
-  images: {
-    url: string;
-    altText: string;
-    _id: string;
-  }[];
+  propertyPictures: PropertyPictures[];
   isFavorite: boolean;
 }
 

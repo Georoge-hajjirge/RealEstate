@@ -55,7 +55,7 @@ const DisplayWebsiteFooter: React.FC = () => {
 
                 <DisplayFooterSocialIcons />
 
-                <div className="grid grid-cols-6 md:grid-cols-3  mt-6 ml-80 mr-80">
+                <div className="grid grid-cols-6 md:grid-cols-3  mt-6 ">
                     <DisplayFooterNavSection title="Our Company" links={companyLinks} />
                     <DisplayFooterNavSection title="Popular Searches" links={searchLinks} />
                     <DisplayFooterNavSection title="Let Us Help" links={helpLinks} />
